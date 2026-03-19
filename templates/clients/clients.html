@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+{% block content %}
+<div style="display: flex; justify-content: space-between;">
+    <h3>Clients</h3>
+    <a href="{% url 'new_client' %}" style="text-decoration: none; padding: 15px; border: 1px solid">New client</a>
+</div>
+{% csrf_token %}
+{% if messages %}
+<div>
+    {% for message in messages %}
+    <p> {{ message }} </p>
+    {% endfor %}
+</div>
+{% endif %}
+{% if clients %}
+<table>
+    <tr>
+        <th>Name</th>
+        <th>Last name</th>
+        <th>Email</th>
+        <th>Telephone number</th>
+        <th>Is Active</th>
+        <th>Actions</th>
+    </tr>
+    {% for client in clients %}
+        <tr>
+            <td>{{ client.name }}</td>
+            <td>{{ client.last_name }}</td>
+            <td>{{ client.email }}</td>
+            <td>{{ client.tel_number }}</td>
+            <td>{% if client.is_active %}✅{% else %}❌{% endif %}</td>
+            <td>
+                <div>
+                    <a href="{% url 'update_client' client.id %}">✏️</a>
+                    <button onclick="handleDeactivation({{ client.id }}, {{ client.is_active|yesno:'true,false' }})">
+                        {% if client.is_active %} ⛔ {% else %} 🔛 {% endif %}
+                    </button>
+                </div>
+            </td>
+        </tr>
+    {% endfor %}
+</table>
+
+{% else %}
+<p>No clients available</p>
+{% endif %}
+{% endblock %}
+
+{% block script %}
+<script>
+    function handleDeactivation(clientId, status){
+        const res = confirm(`Are you sure about ${status? 'deactivating' : 'activating'} this client?`);
+        if (res) {
+            fetch(`http://127.0.0.1:8000/clients/toggle_client_status/${clientId}/`)
+            .then(response => {
+                if (!response.ok){
+                    console.log("something went wrong :()");
+                } else {
+                    location.reload();
+                }
+            })
+        }
+    }
+</script>
+{% endblock %}

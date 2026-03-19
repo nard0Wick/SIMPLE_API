@@ -1,0 +1,19 @@
+{% extends 'base.html' %}
+{% block content %}
+<h3>Client</h3>
+<form method="post" novalidate>
+    {% csrf_token %}
+    {% if messages %}
+    <div>
+        {% for message in messages %}
+        <p> {{ message }} </p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {{ form.as_p }}
+    <div>
+        <button type="submit">Save</button>
+        <button onclick="history.back()">Back</button>
+    </div>
+</form>
+{% endblock %}
